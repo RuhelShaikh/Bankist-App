@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const User = require('./models/userModel');
 const URI = process.env.MONGODB_URI; // Make sure the path to the model is correct
 
