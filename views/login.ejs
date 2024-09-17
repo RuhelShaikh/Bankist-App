@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <!-- TOP NAVIGATION -->
+    <nav>
+      <p class="welcome">Log in to get started</p>
+      <img src="/images/logo.png" alt="Logo" class="logo" />
+      <form class="login" action="/login" method="POST">
+        <input
+          type="text"
+          name="username"
+          placeholder="user"
+          class="login__input login__input--user"
+          required
+        />
+        <!-- In practice, use type="password" -->
+        <input
+          type="password"
+          name="pin"
+          placeholder="PIN"
+          maxlength="4"
+          class="login__input login__input--pin"
+          required
+        />
+        <button class="login__btn">&rarr;</button>
+      </form>
+    </nav>
+
+    <!-- REGISTER SECTION -->
+    <div class="register-container">
+      <p class="welcome">Don't have an account? Register here!</p>
+      <form class="register-form" action="/signup" method="POST">
+        <div class="form-group">
+          <label for="signup-username">Username:</label>
+          <input
+            type="text"
+            id="signup-username"
+            name="username"
+            class="register__input login__input--user"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Pin:</label>
+          <input
+            type="password"
+            id="signup-pin"
+            name="pin"
+            maxlength="4"
+            class="register__input login__input--pin"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm Pin:</label>
+          <input
+            type="password"
+            id="confirm-pin"
+            name="confirmPin"
+            maxlength="4"
+            class="register__input login__input--pin"
+            required
+          />
+        </div>
+
+        <button type="submit" class="signup-btn">Sign Up</button>
+      </form>
+    </div>
+  </body>
+</html>

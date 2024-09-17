@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="shortcut icon" type="image/png" href="/images/icon.png" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Bankist</title>
+  </head>
+  <body>
+    <main class="app">
+      <!-- BALANCE -->
+      <div class="balance">
+        <div>
+          <p class="welcome__label">Welcome <%= username %></p>
+        </div>
+        <div>
+          <p class="balance__label">Current balance</p>
+          <p class="balance__date">
+            As of
+            <span class="date"
+              ><%= new Date().toLocaleDateString(locale) %></span
+            >
+          </p>
+        </div>
+        <p class="balance__value"><%= balance %><%= currency %></p>
+      </div>
+
+      <!-- MOVEMENTS -->
+      <div class="movements">
+        <% for(let i = 0; i < movements.length; i++) { %>
+        <div class="movements__row">
+          <div
+            class="movements__type movements__type--<%= movements[i].amount > 0 ? 'deposit' : 'withdrawal' %>"
+          >
+            <%= movements[i].amount > 0 ? 'deposit' : 'withdrawal' %>
+          </div>
+          <div class="movements__date">
+            <%= new Date(movementsDates[i]).toLocaleDateString(locale) %>
+          </div>
+          <div class="movements__value">
+            <%= movements[i].amount %> <%= currency %>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="summary">
+        <p class="summary__label">In</p>
+        <p class="summary__value summary__value--in">
+          <%= totalIn %><%= currency %>
+        </p>
+        <p class="summary__label">Out</p>
+        <p class="summary__value summary__value--out">
+          <%= totalOut %><%= currency %>
+        </p>
+        <p class="summary__label">Interest</p>
+        <p class="summary__value summary__value--interest">
+          <%= totalInterest %><%= currency %>
+        </p>
+      </div>
+
+      <!-- OPERATION: TRANSFERS -->
+      <div class="operation operation--transfer">
+        <h2>Transfer money</h2>
+        <form class="form form--transfer" action="/transfer" method="POST">
+          <input
+            type="text"
+            name="to"
+            class="form__input form__input--to"
+            required
+          />
+          <input
+            type="number"
+            name="amount"
+            class="form__input form__input--amount"
+            required
+          />
+          <button class="form__btn form__btn--transfer" type="submit">
+            &rarr;
+          </button>
+          <label class="form__label">Transfer to</label>
+          <label class="form__label">Amount</label>
+        </form>
+      </div>
+
+      <!-- OPERATION: LOAN -->
+      <div class="operation operation--loan">
+        <h2>Request loan</h2>
+        <form class="form form--loan">
+          <input type="number" class="form__input form__input--loan-amount" />
+          <button class="form__btn form__btn--loan">&rarr;</button>
+          <button class="logout--btn" onclick="window.location.href='/logout';">
+            Logout
+          </button>
+          <label class="form__label form__label--loan">Amount</label>
+        </form>
+      </div>
+
+      <!-- OPERATION: CLOSE -->
+      <div class="operation operation--close">
+        <h2>Close account</h2>
+        <form class="form form--close" action="/close-account" method="POST">
+          <input
+            type="text"
+            name="username"
+            class="form__input form__input--user"
+            required
+          />
+          <input
+            type="password"
+            name="pin"
+            maxlength="4"
+            class="form__input form__input--pin"
+            required
+          />
+          <button type="submit" class="form__btn form__btn--close">
+            &rarr;
+          </button>
+          <label class="form__label">Confirm user</label>
+          <label class="form__label">Confirm PIN</label>
+        </form>
+      </div>
+
+      <!-- LOGOUT TIMER -->
+      <p class="logout-timer">
+        You will be logged out in <span class="timer">05:00</span>
+      </p>
+    </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const loanForm = document.querySelector('.form--loan');
+
+        if (loanForm) {
+          loanForm.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const loanAmount = document.querySelector(
+              '.form__input--loan-amount'
+            ).value;
+
+            try {
+              const response = await fetch('/request-loan', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: loanAmount }),
+              });
+
+              if (response.ok) {
+                window.location.reload(); // Reload the page to reflect changes
+              } else {
+                console.error('Error:', await response.text());
+              }
+            } catch (error) {
+              console.error('Error:', error);
+            }
+          });
+        }
+      });
+
+      // Set the countdown time (5 minutes = 300 seconds)
+      let timeLeft = 300;
+
+      const timerElement = document.querySelector('.timer');
+
+      const countdown = setInterval(() => {
+        // Calculate minutes and seconds
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        // Display the time in MM:SS format
+        timerElement.textContent = `${minutes}:${
+          seconds < 10 ? '0' : ''
+        }${seconds}`;
+
+        // Decrease timeLeft by 1 second
+        timeLeft--;
+
+        // If timeLeft reaches 0, redirect to logout route
+        if (timeLeft < 0) {
+          clearInterval(countdown);
+          window.location.href = '/logout'; // Adjust the route to your logout logic
+        }
+      }, 1000); // Run every 1 second
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Handle close account form submission
+        const closeForm = document.querySelector('.form--close');
+        if (closeForm) {
+          closeForm.addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const username = document.querySelector('.form__input--user').value;
+            const pin = document.querySelector('.form__input--pin').value;
+
+            try {
+              const response = await fetch('/close-account', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, pin }),
+              });
+
+              if (response.ok) {
+                alert('Account closed successfully');
+                window.location.href = '/login'; // Redirect to login page after successful account closure
+              } else {
+                console.error('Error:', await response.text());
+                alert('Error closing account');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              alert('Error closing account');
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
