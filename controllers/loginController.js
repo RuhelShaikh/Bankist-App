@@ -2,7 +2,7 @@
 const User = require('../models/userModel');
 
 // requiring the library which is used to hash (encypt) the password.
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Rendering the login page
 const renderLogin = (req, res) => {
