@@ -1,16 +1,13 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('./models/userModel'); // Make sure the path to the model is correct
+const User = require('./models/userModel');
+const URI = process.env.MONGODB_URI; // Make sure the path to the model is correct
 
-// MongoDB connection URI (update with your credentials)
-const mongoURI =
-  'mongodb+srv://ruhelshaikh786:nNWMVvPZqAfO6Qnk@cluster0.jwunx82.mongodb.net/Bankist?retryWrites=true&w=majority&appName=Cluster0';
-
-// Seed function to populate the database
+//Seed function to populate the database
 const seedDB = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect(mongoURI);
+    await mongoose.connect(URI);
 
     console.log('MongoDB Connected...');
 
